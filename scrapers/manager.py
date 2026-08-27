@@ -19,16 +19,18 @@ Key changes vs v1:
 import logging
 
 from .linkedin import LinkedInScraper
+from .linkedin_jobs_api import LinkedInJobsAPIScraper
 from .jsearch import JSearchScraper
 from .browser import (HAS_PLAYWRIGHT, NaukriScraper, IndeedScraper,
                       ShineScraper, FounditScraper, GlassdoorScraper)
 
 logger = logging.getLogger("litsearch.scrapers.manager")
 
-DEFAULT_PORTALS = ["linkedin", "jsearch", "naukri", "indeed", "shine", "foundit", "glassdoor"]
+DEFAULT_PORTALS = ["linkedin", "linkedin-api", "jsearch", "naukri", "indeed", "shine", "foundit", "glassdoor"]
 
 SCRAPER_CLASSES = {
     "linkedin": LinkedInScraper,
+    "linkedin-api": LinkedInJobsAPIScraper,
     "jsearch": JSearchScraper,
     "naukri": NaukriScraper,
     "indeed": IndeedScraper,

@@ -37,6 +37,11 @@ logger = logging.getLogger("litsearch.scrapers.jsearch")
 API_URL = "https://jsearch.p.rapidapi.com/search"
 API_HOST = "jsearch.p.rapidapi.com"
 
+# Known: the /search endpoint was removed from jsearch.p.rapidapi.com as of 2025.
+# Only /job-details remains (needs specific job IDs). This scraper will detect
+# the 404 and mark itself unavailable, so the tool falls back to LinkedIn.
+# If OpenWeb Ninja restores /search, this scraper will work again automatically.
+
 
 def _fmt_salary(j: dict) -> str:
     lo, hi = j.get("job_min_salary"), j.get("job_max_salary")
@@ -137,6 +142,13 @@ class JSearchScraper(BaseScraper):
             logger.error("jsearch: HTTP 429 — monthly quota exhausted. "
                          "Marking BLOCKED for this run.")
             self.blocked = True
+            return []
+        if resp.status_code == 404:
+            # /search endpoint was removed from jsearch.p.rapidapi.com
+            logger.warning("jsearch: /search endpoint not found (API may have been "
+                           "restructured). Marking UNAVAILABLE. Use LinkedIn scraper instead.")
+            self.blocked = True
+            self.unavailable_reason = "/search endpoint removed from API"
             return []
         if resp.status_code != 200:
             logger.warning("jsearch: HTTP %s on %r: %.200s",
