@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Output files
+*.xlsx
+LITSEARCH_Results_*.xlsx
+
+# Temp files
+browse_runner.py
+*_browse_runner.py
+
+# Binary files
+*.zip
+
+# Test/fixture files
+*.pdf
+!README.md

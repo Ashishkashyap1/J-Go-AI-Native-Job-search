@@ -1,0 +1,10 @@
+# LITSEARCH v2 - Core Dependencies
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+lxml>=5.0.0
+openpyxl>=3.1.0
+pymupdf>=1.24.0
+rich>=13.0.0
+playwright>=1.40.0      # Browser automation for Naukri, Indeed, Shine, Foundit, Glassdoor
+
+# After pip install, also run: playwright install chromium
