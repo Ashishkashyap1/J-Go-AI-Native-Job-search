@@ -25,6 +25,7 @@ Thumbs.db
 
 # Output files
 *.xlsx
+!sample_output_*.xlsx
 LITSEARCH_Results_*.xlsx
 
 # Temp files

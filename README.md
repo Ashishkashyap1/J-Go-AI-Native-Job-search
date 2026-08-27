@@ -1,6 +1,9 @@
 # 🔍 LITSEARCH — AI-Powered Multi-Portal Job Search Engine
 
 > **Stop endlessly scrolling job boards.** LITSEARCH parses your CV, auto-generates search queries, scrapes 6 major job portals simultaneously, scores every job against your profile out of 100, and exports everything to a beautiful Excel file with skills gap analysis.
+>
+> 📥 **[Download Sample Output (10-day search)](sample_output_10day.xlsx)** — 20 jobs, 15 enriched with descriptions
+> 📥 **[Download Sample Output (LinkedIn API)](sample_output_api.xlsx)** — 20 jobs, 10 with full descriptions
 
 ---
 
@@ -9,7 +12,7 @@
 | Feature | Description |
 |---------|-------------|
 | **CV Parsing** | Extracts 30+ skills, 8+ suggested roles from your PDF resume |
-| **Multi-Portal Search** | LinkedIn, Naukri, Indeed, Glassdoor, Shine, Foundit — simultaneously |
+| **Multi-Portal Search** | LinkedIn (guest + API), Naukri, Indeed, Glassdoor, Shine, Foundit — simultaneously |
 | **Smart Scoring** | 100-point scoring: title match (25), skills overlap (35), keywords (15), location (15), experience (10) |
 | **Skills Gap Analysis** | Shows missing skills per job — know exactly what to upskill |
 | **Full-Text Enrichment** | Fetches job descriptions for top candidates, re-scores with full context |
@@ -55,6 +58,13 @@ python -m LITSEARCH --cv resume.pdf --queries "financial analyst" "data analyst"
 
 # Show top 20 matches, jobs from last 14 days
 python -m LITSEARCH --cv resume.pdf --top 20 --freshness 14
+
+# With LinkedIn API (requires RAPIDAPI_KEY env var)
+python -m LITSEARCH --cv resume.pdf --portals linkedin linkedin-api
+
+# See sample output files for reference:
+# sample_output_10day.xlsx  — 20 jobs, 15 enriched
+# sample_output_api.xlsx    — 20 jobs, 10 with full descriptions
 ```
 
 ### CLI Options
@@ -116,6 +126,15 @@ Portal Health:
 5. **Skills Gap** — Missing skills aggregated across top jobs
 6. **QC Report** — Maker-checker audit trail with reject reasons
 
+### 📥 Sample Output Files
+
+| File | Description | Jobs | Enriched |
+|------|-------------|------|----------|
+| [sample_output_10day.xlsx](sample_output_10day.xlsx) | 10-day freshness, all portals | 20 | 15 |
+| [sample_output_api.xlsx](sample_output_api.xlsx) | LinkedIn guest + API, 10-day freshness | 20 | 10 |
+
+Both files contain real job data from a test run searching for roles matching Ashish Ojha's CV (Financial Analyst, SEO Specialist, Equity Research, Product Designer) in Bengaluru.
+
 ---
 
 ## 🏗️ Architecture
@@ -131,10 +150,14 @@ LITSEARCH/
 ├── checker.py               # Maker-Checker QC gate (rejects junk)
 ├── excel_export.py          # Formatted Excel with 6 sheets
 ├── requirements.txt         # Dependencies
+├── sample_output_10day.xlsx # 📥 Sample: 10-day freshness search results
+├── sample_output_api.xlsx   # 📥 Sample: LinkedIn API search results
 └── scrapers/
     ├── __init__.py
     ├── base.py              # Polite HTTP, backoff, text utilities
     ├── linkedin.py          # Guest API scraper + description fetcher
+    ├── linkedin_jobs_api.py # LinkedIn Job Search API (RapidAPI)
+    ├── jsearch.py           # JSearch API (RapidAPI)
     ├── browser.py           # Playwright scrapers (Naukri, Indeed, etc.)
     └── manager.py           # Concurrent orchestrator, portal health
 ```
@@ -163,8 +186,9 @@ When descriptions are unavailable (title-only mode), weight shifts to title and 
 ### Recommended Alternatives for Volume
 
 For serious job search volume without anti-bot arms races:
-- **Adzuna API** (free tier): developer.adzuna.com — reliable, has descriptions
-- **JSearch** (RapidAPI): Aggregates Indeed/LinkedIn/Glassdoor with descriptions included
+- **LinkedIn Job Search API** (RapidAPI, free tier): Full descriptions, company info, 20k+ jobs/hour
+- **Adzuna API** (free tier): developer.adzuna.com — reliable, India-focused
+- **JSearch** (RapidAPI): Aggregates Indeed/LinkedIn/Glassdoor (search endpoint may be deprecated)
 
 ---
 
