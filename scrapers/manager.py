@@ -19,15 +19,17 @@ Key changes vs v1:
 import logging
 
 from .linkedin import LinkedInScraper
+from .jsearch import JSearchScraper
 from .browser import (HAS_PLAYWRIGHT, NaukriScraper, IndeedScraper,
                       ShineScraper, FounditScraper, GlassdoorScraper)
 
 logger = logging.getLogger("litsearch.scrapers.manager")
 
-DEFAULT_PORTALS = ["linkedin", "naukri", "indeed", "shine", "foundit", "glassdoor"]
+DEFAULT_PORTALS = ["linkedin", "jsearch", "naukri", "indeed", "shine", "foundit", "glassdoor"]
 
 SCRAPER_CLASSES = {
     "linkedin": LinkedInScraper,
+    "jsearch": JSearchScraper,
     "naukri": NaukriScraper,
     "indeed": IndeedScraper,
     "shine": ShineScraper,
@@ -81,7 +83,7 @@ class ScraperManager:
         portal_status = {}
         for name, scraper in self.scrapers.items():
             if not getattr(scraper, "available", True):
-                portal_status[name] = "UNAVAILABLE (install Playwright)"
+                portal_status[name] = ("UNAVAILABLE (" + getattr(scraper, "unavailable_reason", "install Playwright") + ")")
             elif getattr(scraper, "blocked", False):
                 portal_status[name] = "BLOCKED (403/429/CAPTCHA — respected)"
             elif portal_counts.get(name, 0) == 0:

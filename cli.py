@@ -349,7 +349,7 @@ Examples:
         "--portals", "-p",
         nargs="+",
         default=None,
-        choices=["linkedin", "indeed", "naukri", "glassdoor", "shine", "foundit"],
+        choices=["linkedin", "jsearch", "indeed", "naukri", "glassdoor", "shine", "foundit"],
         help="Job portals to search (default: all)",
     )
     parser.add_argument(

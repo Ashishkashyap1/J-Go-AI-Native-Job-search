@@ -20,7 +20,7 @@ surfaced as DEAD instead of being silently hidden in a summary row.
 """
 
 import re
-from urllib.parse import urlparse, urlunparse
+from urllib.parse import urlparse, urlunparse, parse_qsl, urlencode
 
 
 # --- URL patterns that identify a REAL job-detail page, per portal ---
@@ -57,14 +57,25 @@ AGGREGATE_TITLE_PATTERNS = [
 ]
 
 
+# Query params that ARE the job identity (must survive canonicalization).
+# Without this, indeed.com/viewjob?jk=A and ?jk=B collapse to one URL and
+# R4 wrongly rejects distinct jobs as duplicates.
+IDENTITY_PARAMS = {"jk", "jobid", "id", "currentjobid", "jl", "vjk"}
+
+
 def canonical_url(url: str) -> str:
-    """Strip tracking query params + fragment so dedup works across refIds."""
+    """Strip tracking params + fragment, KEEP job-identity params (jk= etc.)."""
     if not url:
         return ""
     try:
         p = urlparse(url.strip())
         path = p.path.rstrip("/")
-        return urlunparse((p.scheme or "https", p.netloc.lower(), path, "", "", ""))
+        kept = sorted(
+            (k, v) for k, v in parse_qsl(p.query, keep_blank_values=True)
+            if k.lower() in IDENTITY_PARAMS
+        )
+        query = urlencode(kept)
+        return urlunparse((p.scheme or "https", p.netloc.lower(), path, "", query, ""))
     except Exception:
         return url.strip().lower()
 
