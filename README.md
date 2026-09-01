@@ -1,9 +1,60 @@
 # 🔍 LITSEARCH — AI-Powered Multi-Portal Job Search Engine
 
-> **Stop endlessly scrolling job boards.** LITSEARCH parses your CV, auto-generates search queries, scrapes 6 major job portals simultaneously, scores every job against your profile out of 100, and exports everything to a beautiful Excel file with skills gap analysis.
+> **Stop endlessly scrolling job boards.** LITSEARCH parses your CV, auto-generates search queries, scrapes 7 major job portals simultaneously, scores every job against your profile out of 100, and exports everything to a beautiful Excel file with skills gap analysis.
 >
 > 📥 **[Download Sample Output (10-day search)](sample_output_10day.xlsx)** — 20 jobs, 15 enriched with descriptions
 > 📥 **[Download Sample Output (LinkedIn API)](sample_output_api.xlsx)** — 20 jobs, 10 with full descriptions
+
+---
+
+## ⚡ Quick Start (One Click)
+
+### Windows
+```bash
+run.bat "C:\path\to\your_cv.pdf"
+```
+
+### Linux / Mac
+```bash
+chmod +x run.sh
+./run.sh /path/to/your_cv.pdf
+```
+
+That's it. The script handles **everything** — installs Python deps, Playwright/Chromium, and runs the search.
+
+---
+
+## 📋 Manual Setup (If You Prefer)
+
+### Step 1: Install
+```bash
+pip install -r requirements.txt
+python -m playwright install chromium
+```
+
+### Step 2: Run
+```bash
+python -m LITSEARCH --cv "C:\path\to\your_cv.pdf" --location Bengaluru
+```
+
+### Step 3: Open Excel
+Find `LITSEARCH_Results_<timestamp>.xlsx` in the folder — open it in Excel.
+
+---
+
+## 🎯 What It Searches For
+
+LITSEARCH extracts skills from your CV and generates **fresher/early-career** job queries:
+
+| Your Skills | Auto-Generated Queries |
+|-------------|----------------------|
+| Equity Research, DCF, Valuation | Junior Equity Research Analyst, Finance Trainee |
+| Python, SQL, Data Analysis | Junior Data Analyst, Data Analytics Intern |
+| Compliance, AML, KYC | Junior Compliance Analyst, Risk Intern |
+| Proposal Writing, RFP | Junior Proposal Writer, Technical Writer |
+| SEO, Content | Junior SEO Specialist, Digital Marketing Intern |
+| Product Design, Figma | Junior Product Designer, UI/UX Design Intern |
+| Bloomberg, Portfolio Mgmt | Fund Operations Trainee, Banking Intern |
 
 ---
 
@@ -11,69 +62,26 @@
 
 | Feature | Description |
 |---------|-------------|
-| **CV Parsing** | Extracts 30+ skills, 8+ suggested roles from your PDF resume |
-| **Multi-Portal Search** | LinkedIn (guest + API), Naukri, Indeed, Glassdoor, Shine, Foundit — simultaneously |
+| **CV Parsing** | Extracts 30+ skills, 20+ fresher/early-career roles from your PDF resume |
+| **Multi-Portal Search** | LinkedIn (guest + API), Naukri, Indeed, Glassdoor, Shine, Foundit, JSearch — simultaneously |
 | **Smart Scoring** | 100-point scoring: title match (25), skills overlap (35), keywords (15), location (15), experience (10) |
 | **Skills Gap Analysis** | Shows missing skills per job — know exactly what to upskill |
 | **Full-Text Enrichment** | Fetches job descriptions for top candidates, re-scores with full context |
 | **Maker-Checker QC** | Rejects SERP pages, aggregate titles, duplicates — only real jobs pass |
 | **Playwright Browser** | JS-heavy portals rendered in headless Chromium (subprocess-isolated) |
-| **Excel Export** | 6 sheets: Top Matches, All Jobs, CV Profile, Portal Summary, Skills Gap, QC Report |
+| **Excel Export** | 5 sheets: Top Matches, All Jobs, CV Profile, Portal Summary, QC Report |
 | **Freshness Filter** | Only jobs posted in last N days (default: 7) |
 | **CLI with Rich UI** | Colorful terminal output with progress bars and tables |
 
 ---
 
-## 🚀 Quick Start
-
-### Install
-
-```bash
-# Clone the repo
-git clone https://github.com/Ashishkashyap1/litsearch.git
-cd litsearch
-
-# Install Python dependencies
-pip install -r requirements.txt
-
-# Install Playwright + Chromium (for Naukri, Indeed, etc.)
-pip install playwright
-playwright install chromium
-```
-
-### Run
-
-```bash
-# Basic search with your CV
-python -m LITSEARCH --cv "C:\Users\you\Desktop\Your_CV.pdf"
-
-# Search in a specific city
-python -m LITSEARCH --cv resume.pdf --location Bengaluru
-
-# Search specific portals only
-python -m LITSEARCH --cv resume.pdf --portals linkedin naukri
-
-# Custom queries
-python -m LITSEARCH --cv resume.pdf --queries "financial analyst" "data analyst"
-
-# Show top 20 matches, jobs from last 14 days
-python -m LITSEARCH --cv resume.pdf --top 20 --freshness 14
-
-# With LinkedIn API (requires RAPIDAPI_KEY env var)
-python -m LITSEARCH --cv resume.pdf --portals linkedin linkedin-api
-
-# See sample output files for reference:
-# sample_output_10day.xlsx  — 20 jobs, 15 enriched
-# sample_output_api.xlsx    — 20 jobs, 10 with full descriptions
-```
-
-### CLI Options
+## 🖥️ CLI Options
 
 | Flag | Description | Default |
 |------|-------------|---------|
 | `--cv`, `-c` | Path to CV PDF **(required)** | — |
 | `--output`, `-o` | Custom Excel filename | `LITSEARCH_Results_<timestamp>.xlsx` |
-| `--portals`, `-p` | Portals to search | all 6 |
+| `--portals`, `-p` | Portals to search | all |
 | `--location`, `-l` | Job location filter | auto-detected from CV |
 | `--max-results`, `-m` | Max results per portal per query | 15 |
 | `--top`, `-t` | Top N matches to display | 10 |
@@ -85,10 +93,10 @@ python -m LITSEARCH --cv resume.pdf --portals linkedin linkedin-api
 
 ## 📊 Results
 
-### Test Run (Bengaluru, 8 queries, 6 portals)
+### Test Run (Bengaluru, 8 queries, all portals)
 
 ```
-Total Jobs Found:     20 (after QC dedup from 40 scraped)
+Total Jobs Found:     20 (after QC dedup from 50 scraped)
 Full-text Scored:     10 (with job descriptions fetched)
 Good Matches (60+):   12
 Moderate (40+):        5
@@ -111,29 +119,6 @@ Portal Health:
 | 3 | 24 Seven Inc | Analyst – Investment Due Diligence | 75% 🔵 | — |
 | 4 | JP Morgan | Financial Analyst - Associate | 73% 🔵 | — |
 | 5 | Nutanix | Financial Analyst | 70% 🔵 | tableau, salary |
-| 6 | Creatio | Product Designer | 70% 🔵 | — |
-| 7 | ofi | Junior Compliance Analyst | 67% 🔵 | — |
-| 8 | Qualcomm | Financial Analyst | 67% 🔵 | power bi, tableau, sap |
-| 9 | Adobe | Product Designer – Adobe Express | 65% 🔵 | — |
-| 10 | Infosys | Product Designer | 65% 🔵 | — |
-
-### Excel Output (6 Sheets)
-
-1. **Top Matches** — Ranked jobs with scores, skills gap, and apply links
-2. **All Jobs** — Every scraped job with descriptions, matched/missing skills
-3. **CV Profile** — Your extracted skills, roles, experience, education
-4. **Portal Summary** — Jobs per portal + portal health status
-5. **Skills Gap** — Missing skills aggregated across top jobs
-6. **QC Report** — Maker-checker audit trail with reject reasons
-
-### 📥 Sample Output Files
-
-| File | Description | Jobs | Enriched |
-|------|-------------|------|----------|
-| [sample_output_10day.xlsx](sample_output_10day.xlsx) | 10-day freshness, all portals | 20 | 15 |
-| [sample_output_api.xlsx](sample_output_api.xlsx) | LinkedIn guest + API, 10-day freshness | 20 | 10 |
-
-Both files contain real job data from a test run searching for roles matching Ashish Ojha's CV (Financial Analyst, SEO Specialist, Equity Research, Product Designer) in Bengaluru.
 
 ---
 
@@ -145,34 +130,24 @@ LITSEARCH/
 ├── __main__.py              # python -m LITSEARCH entry
 ├── cli.py                   # Rich CLI with progress bars
 ├── cv_parser.py             # PDF resume parser (skills, roles, experience)
-├── keyword_analyzer.py      # Search query generator from CV data
+├── keyword_analyzer.py      # Search query generator (fresher-focused)
 ├── scorer.py                # 100-point scoring engine with skills gap
 ├── checker.py               # Maker-Checker QC gate (rejects junk)
-├── excel_export.py          # Formatted Excel with 6 sheets
+├── excel_export.py          # Formatted Excel with 5 sheets
 ├── requirements.txt         # Dependencies
+├── run.bat                  # 🚀 One-click launcher (Windows)
+├── run.sh                   # 🚀 One-click launcher (Linux/Mac)
 ├── sample_output_10day.xlsx # 📥 Sample: 10-day freshness search results
 ├── sample_output_api.xlsx   # 📥 Sample: LinkedIn API search results
 └── scrapers/
     ├── __init__.py
     ├── base.py              # Polite HTTP, backoff, text utilities
     ├── linkedin.py          # Guest API scraper + description fetcher
-    ├── linkedin_jobs_api.py # LinkedIn Job Search API (RapidAPI)
+    ├── linkedin_jobs_api.py # Fresh LinkedIn Scraper API (RapidAPI)
     ├── jsearch.py           # JSearch API (RapidAPI)
     ├── browser.py           # Playwright scrapers (Naukri, Indeed, etc.)
     └── manager.py           # Concurrent orchestrator, portal health
 ```
-
-### Scoring Formula
-
-| Component | Weight (full-text) | Weight (title-only) | Description |
-|-----------|-------------------|---------------------|-------------|
-| Title Match | 25 | 55 | How well title matches your suggested roles |
-| Skills Overlap | 35 | 15 | CV skills found in job description |
-| Keywords | 15 | — | Domain coverage (finance, tech, writing, analysis) |
-| Location | 15 | 20 | City match, remote, India cities |
-| Experience | 10 | 10 | Years-of-experience heuristic |
-
-When descriptions are unavailable (title-only mode), weight shifts to title and location. After description enrichment, full-text scoring kicks in for accurate skill matching.
 
 ---
 
@@ -186,22 +161,19 @@ When descriptions are unavailable (title-only mode), weight shifts to title and 
 ### Recommended Alternatives for Volume
 
 For serious job search volume without anti-bot arms races:
-- **LinkedIn Job Search API** (RapidAPI, free tier): Full descriptions, company info, 20k+ jobs/hour
+- **Fresh LinkedIn Scraper API** (RapidAPI, free tier): Full descriptions, company info, 20k+ jobs/hour — https://rapidapi.com/fantastic-jobs-fantastic-jobs-default/api/fresh-linkedin-scraper-api
 - **Adzuna API** (free tier): developer.adzuna.com — reliable, India-focused
 - **JSearch** (RapidAPI): Aggregates Indeed/LinkedIn/Glassdoor (search endpoint may be deprecated)
 
 ---
 
-## 🛠️ Installation
-
-### Requirements
+## 🛠️ Requirements
 
 - Python 3.10+
 - Playwright + Chromium (for browser-based portals)
 - Internet connection
 
 ### Dependencies
-
 ```
 pymupdf>=1.24.0          # PDF parsing
 requests>=2.31.0         # HTTP client
@@ -210,13 +182,6 @@ lxml>=5.0.0              # HTML parser
 openpyxl>=3.1.0          # Excel export
 rich>=13.0.0             # CLI formatting
 playwright>=1.40.0       # Browser automation
-```
-
-### Full Install
-
-```bash
-pip install pymupdf requests beautifulsoup4 lxml openpyxl rich playwright
-playwright install chromium
 ```
 
 ---

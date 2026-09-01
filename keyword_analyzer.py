@@ -37,6 +37,18 @@ EXPERIENCE_KEYWORDS = {
     "senior": ["senior", "lead", "principal", "manager", "director", "head", "vp", "5+ years", "8+ years"],
 }
 
+# Fresher / early-career query prefixes
+FRESHER_PREFIXES = [
+    "junior",
+    "entry level",
+    "fresher",
+    "graduate",
+    "trainee",
+    "intern",
+    "assistant",
+    "associate",
+]
+
 
 def generate_search_queries(cv_data: dict, max_queries: int = 25) -> list[dict]:
     """
@@ -62,8 +74,23 @@ def generate_search_queries(cv_data: dict, max_queries: int = 25) -> list[dict]:
             "priority": 1,
         })
 
-    # --- Priority 2: Skill + role combinations ---
-    role_keywords = ["analyst", "developer", "specialist", "consultant", "writer", "manager"]
+    # --- Priority 1b: Fresher/early-career variants of each role ---
+    for role in roles:
+        base_role = re.sub(r"\s*/\s.*", "", role)
+        for prefix in FRESHER_PREFIXES:
+            # Only add if role doesn't already start with a fresher keyword
+            if not any(role.lower().startswith(p) for p in FRESHER_PREFIXES):
+                query = f"{prefix} {base_role}"
+                if location:
+                    query += f" {location}"
+                queries.append({
+                    "query": query,
+                    "source_skills": [role],
+                    "priority": 1,
+                })
+
+    # --- Priority 2: Skill + role combinations (fresher-friendly) ---
+    role_keywords = ["analyst", "developer", "specialist", "consultant", "writer", "trainee", "intern"]
     top_skills = skills[:10]  # Focus on top 10 skills
 
     for skill in top_skills:

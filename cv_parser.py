@@ -57,29 +57,42 @@ SKILL_PATTERNS = {
     ],
 }
 
-# Role title patterns
+# Role title patterns — includes fresher / early-career variants
 ROLE_PATTERNS = [
-    (r"(?i)\b(equity\s+research\s+analyst|research\s+analyst)\b", "Equity Research Analyst"),
-    (r"(?i)\b(financial\s+analyst|finance\s+analyst)\b", "Financial Analyst"),
-    (r"(?i)\b(data\s+analyst)\b", "Data Analyst"),
-    (r"(?i)\b(business\s+analyst|ba)\b", "Business Analyst"),
+    # --- Finance (fresher-friendly) ---
+    (r"(?i)\b(junior\s+equity\s+research|equity\s+research\s+analyst|research\s+analyst)\b", "Equity Research Analyst"),
+    (r"(?i)\b(junior\s+financial\s+analyst|graduate\s+finance|financial\s+analyst|finance\s+analyst)\b", "Financial Analyst"),
+    (r"(?i)\b(junior\s+data\s+analyst|data\s+analyst)\b", "Data Analyst"),
+    (r"(?i)\b(junior\s+business\s+analyst|business\s+analyst)\b", "Business Analyst"),
     (r"(?i)\b(quantitative\s+analyst|quant\s+analyst|quant)\b", "Quantitative Analyst"),
     (r"(?i)\b(portfolio\s+analyst|portfolio\s+manager)\b", "Portfolio Analyst"),
     (r"(?i)\b(risk\s+analyst|risk\s+manager)\b", "Risk Analyst"),
-    (r"(?i)\b(compliance\s+analyst|compliance\s+officer)\b", "Compliance Analyst"),
+    (r"(?i)\b(junior\s+compliance|compliance\s+analyst|compliance\s+officer)\b", "Compliance Analyst"),
+    (r"(?i)\b(junior\s+credit\s+analyst|credit\s+analyst)\b", "Credit Analyst"),
+    (r"(?i)\b(investment\s+analyst|investment\s+banking\s+analyst)\b", "Investment Analyst"),
+    (r"(?i)\b(junior\s+aml|aml\s+analyst|junior\s+kyc|kyc\s+analyst)\b", "AML/KYC Analyst"),
+    (r"(?i)\b(due\s+diligence\s+analyst)\b", "Due Diligence Analyst"),
+    (r"(?i)\b(fintech\s+analyst)\b", "FinTech Analyst"),
+    # --- Writing / RFP (fresher-friendly) ---
     (r"(?i)\b(proposal\s+writer|rfp\s+specialist|rfp\s+writer)\b", "Proposal Writer"),
     (r"(?i)\b(technical\s+writer)\b", "Technical Writer"),
     (r"(?i)\b(content\s+writer|copywriter)\b", "Content Writer"),
+    # --- Product / Design (fresher-friendly) ---
+    (r"(?i)\b(junior\s+product\s+designer|product\s+designer|ui/ux\s+designer)\b", "Product Designer"),
     (r"(?i)\b(product\s+manager|pm)\b", "Product Manager"),
     (r"(?i)\b(product\s+analyst)\b", "Product Analyst"),
-    (r"(?i)\b(data\s+engineer)\b", "Data Engineer"),
-    (r"(?i)\b(python\s+developer|software\s+engineer)\b", "Python Developer"),
-    (r"(?i)\b(fintech\s+analyst)\b", "FinTech Analyst"),
-    (r"(?i)\b(credit\s+analyst)\b", "Credit Analyst"),
-    (r"(?i)\b(investment\s+analyst)\b", "Investment Analyst"),
-    (r"(?i)\b(seo\s+specialist|seo\s+analyst)\b", "SEO Specialist"),
-    (r"(?i)\b(due\s+diligence\s+analyst)\b", "Due Diligence Analyst"),
-    (r"(?i)\b(aml\s+analyst|kyc\s+analyst)\b", "AML/KYC Analyst"),
+    # --- Tech (fresher-friendly) ---
+    (r"(?i)\b(junior\s+data\s+engineer|data\s+engineer)\b", "Data Engineer"),
+    (r"(?i)\b(junior\s+python\s+developer|python\s+developer|software\s+engineer)\b", "Python Developer"),
+    (r"(?i)\b(seo\s+specialist|seo\s+analyst|junior\s+seo)\b", "SEO Specialist"),
+    # --- Fresher / Intern / Trainee catch-all ---
+    (r"(?i)\b(finance\s+trainee|finance\s+intern|accounting\s+trainee)\b", "Finance Trainee"),
+    (r"(?i)\b(banking\s+trainee|banking\s+intern|credit\s+trainee)\b", "Banking Trainee"),
+    (r"(?i)\b(data\s+analytics\s+intern|analytics\s+intern)\b", "Data Analytics Intern"),
+    (r"(?i)\b(compliance\s+intern|risk\s+intern|audit\s+intern)\b", "Compliance Intern"),
+    (r"(?i)\b(investment\s+intern|wealth\s+management\s+intern)\b", "Investment Intern"),
+    (r"(?i)\b(marketing\s+intern|digital\s+marketing\s+intern|content\s+intern)\b", "Marketing Intern"),
+    (r"(?i)\b(product\s+intern|design\s+intern|ux\s+intern)\b", "Product Intern"),
 ]
 
 
@@ -237,7 +250,7 @@ def extract_certifications(text: str) -> list[str]:
 
 
 def extract_roles_from_cv(text: str) -> list[str]:
-    """Infer potential job roles from CV content."""
+    """Infer potential job roles from CV content -- includes fresher / early-career roles."""
     roles = set()
     text_lower = text.lower()
 
@@ -245,23 +258,51 @@ def extract_roles_from_cv(text: str) -> list[str]:
         if re.search(pattern, text):
             roles.add(role_title)
 
-    # Add roles based on skill combinations
+    # --- Skill-based role inference (fresher-friendly) ---
+    # Finance
     if "equity" in text_lower and "research" in text_lower:
-        roles.add("Equity Research Analyst")
-    if "proposal" in text_lower and ("write" in text_lower or "writing" in text_lower):
-        roles.add("Proposal Writer / RFP Specialist")
-    if "financial" in text_lower and "analys" in text_lower:
-        roles.add("Financial Analyst")
-    if "python" in text_lower and "data" in text_lower:
-        roles.add("Data Analyst / Python Developer")
-    if "seo" in text_lower:
-        roles.add("SEO Specialist")
-    if "product" in text_lower and "design" in text_lower:
-        roles.add("Product Designer")
+        roles.add("Junior Equity Research Analyst")
+    if "financial" in text_lower and ("analys" in text_lower or "model" in text_lower):
+        roles.add("Junior Financial Analyst")
     if "due diligence" in text_lower:
         roles.add("Due Diligence Analyst")
     if "compliance" in text_lower or "aml" in text_lower or "kyc" in text_lower:
-        roles.add("Compliance / AML Analyst")
+        roles.add("Junior Compliance Analyst")
+    if "credit" in text_lower or "lending" in text_lower:
+        roles.add("Credit Analyst")
+    if "portfolio" in text_lower or "mutual fund" in text_lower or "aif" in text_lower:
+        roles.add("Fund Operations Trainee")
+    if "bloomberg" in text_lower or "valuation" in text_lower or "dcf" in text_lower:
+        roles.add("Finance Analyst")
+    if "audit" in text_lower or "accounting" in text_lower:
+        roles.add("Audit / Accounts Trainee")
+    # Data / Tech
+    if "python" in text_lower and "data" in text_lower:
+        roles.add("Junior Data Analyst")
+    if "sql" in text_lower and ("data" in text_lower or "analys" in text_lower):
+        roles.add("Data Analyst")
+    if "data" in text_lower and ("pipeline" in text_lower or "engineering" in text_lower or "etl" in text_lower):
+        roles.add("Junior Data Engineer")
+    # Writing
+    if "proposal" in text_lower and ("write" in text_lower or "writing" in text_lower):
+        roles.add("Junior Proposal Writer")
+    if "technical" in text_lower and "writing" in text_lower:
+        roles.add("Technical Writer")
+    if "content" in text_lower and ("write" in text_lower or "writing" in text_lower):
+        roles.add("Content Writer")
+    # Product / Design / SEO
+    if "seo" in text_lower:
+        roles.add("Junior SEO Specialist")
+    if "product" in text_lower and "design" in text_lower:
+        roles.add("Junior Product Designer")
+    if "figma" in text_lower or "ux" in text_lower or "ui" in text_lower:
+        roles.add("UI/UX Design Intern")
+    # Marketing
+    if "digital" in text_lower and "marketing" in text_lower:
+        roles.add("Digital Marketing Intern")
+    # Banking
+    if "banking" in text_lower or "investment" in text_lower:
+        roles.add("Banking / Finance Intern")
 
     return sorted(roles)
 
