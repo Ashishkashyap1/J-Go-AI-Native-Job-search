@@ -9,15 +9,19 @@
 
 ## ⚡ Quick Start (One Click)
 
-### Windows
-```bash
-run.bat "C:\path\to\your_cv.pdf"
+### Windows (PowerShell or CMD)
+```powershell
+cd C:\Users\you\Desktop\Projects\LITSEARCH
+.\run.bat "C:\path\to\your_cv.pdf" --location Bengaluru
 ```
+> **Tip:** Use `.\run.bat` (with the dot-slash) in PowerShell.
+> You can pass any extra flags after the CV path: `--location`, `--freshness 8`, `--top 20`, etc.
 
 ### Linux / Mac
 ```bash
+cd ~/Desktop/Projects/LITSEARCH
 chmod +x run.sh
-./run.sh /path/to/your_cv.pdf
+./run.sh /path/to/your_cv.pdf --location Bengaluru
 ```
 
 That's it. The script handles **everything** — installs Python deps, Playwright/Chromium, and runs the search.
@@ -26,16 +30,19 @@ That's it. The script handles **everything** — installs Python deps, Playwrigh
 
 ## 📋 Manual Setup (If You Prefer)
 
-### Step 1: Install
+### Step 1: Install (from inside LITSEARCH/)
 ```bash
+cd C:\Users\you\Desktop\Projects\LITSEARCH
 pip install -r requirements.txt
 python -m playwright install chromium
 ```
 
-### Step 2: Run
+### Step 2: Run (from the PARENT folder, i.e. Projects/)
 ```bash
+cd C:\Users\you\Desktop\Projects
 python -m LITSEARCH --cv "C:\path\to\your_cv.pdf" --location Bengaluru
 ```
+> **Important:** `python -m LITSEARCH` must be run from the folder **above** `LITSEARCH/`, not from inside it.
 
 ### Step 3: Open Excel
 Find `LITSEARCH_Results_<timestamp>.xlsx` in the folder — open it in Excel.
